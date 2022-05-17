@@ -34,5 +34,5 @@ add more documentation on what configs are used and why
 most config files are added before the rpm packages. You can see the differences
 with diff, like diff -u /etc/mail/sendmail.mc.rpmnew /etc/mail/sendmail.mc
 
-
+Learn how README.md formatting works so this is more readable.
 
