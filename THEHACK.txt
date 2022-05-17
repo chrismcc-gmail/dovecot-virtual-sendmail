@@ -32,8 +32,9 @@ option that most people don't use, db files for fast lookup.  By default it adds
 the contents of /etc/passwd, /etc/shadow, /etc/group, and some lesser used files
 to a key lookup (?) style database.  This allows the system to do fast uid/gid
 lookups when there are thousands of local users.  There is a Makefile in /var/db
-that generates the /var/db/passwd.db, /var/db/group.db files. I added /etc/dovecot/usersfile to the passwd line, ran make, and boom, 'getent passwd' showed the
-dovecot users also.  
+that generates the /var/db/passwd.db, /var/db/group.db files. I added
+/etc/dovecot/usersfile to the passwd line, ran make, and boom, 'getent passwd'
+showed the dovecot users also.  
 
 After some more testing, the result was a /var/db/Makefile with only one target
 /var/db/passwd.db that only used /etc/dovecot/usersfile.  And

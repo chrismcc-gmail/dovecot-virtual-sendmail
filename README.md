@@ -13,7 +13,6 @@
 
 ### dovcot for local delivery and imap for email clients
  a default sieve rule to deliver messages marked as spam by spamassassin
-
  directly to the users Junk folder
 
 ### roundcubemail for web based email with a few plugings added
@@ -24,7 +23,6 @@
 ### Adds a few selinux policies to allow all the above to work together
 
 See manifests/init.pp for all the details.  The config files installed are in
-
 the files directory.
 
 
