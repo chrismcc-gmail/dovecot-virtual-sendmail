@@ -1,0 +1,9 @@
+# root needs to be here to get mail from the aliases in /etc/aliases
+# the Makefile skips it
+# generate passwds with doveadm, doveadm pw -p test
+# then update system with:
+# make -C /var/db
+# getent passwd to verify
+#
+root:{CRYPT}nopasswd:::::
+admin:{CRYPT}createwithdoveadm:::::

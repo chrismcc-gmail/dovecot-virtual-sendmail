@@ -1,0 +1,56 @@
+
+module mail-server 1.0;
+
+require {
+	type dovecot_deliver_t;
+	type pop_port_t;
+	type admin_home_t;
+	type spamd_update_t;
+	type dkim_milter_t;
+	type system_db_t;
+	type httpd_t;
+	type smtp_port_t;
+	type systemd_unit_file_t;
+	type init_t;
+	type fs_t;
+	class dir write;
+	class filesystem getattr;
+	class service start;
+	class system status;
+	class file map;
+	class capability { setgid setuid };
+	class tcp_socket name_connect;
+}
+
+#============= dkim_milter_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow dkim_milter_t system_db_t:file map;
+
+#============= dovecot_deliver_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow dovecot_deliver_t self:capability setgid;
+allow dovecot_deliver_t self:capability setuid;
+
+#============= httpd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t pop_port_t:tcp_socket name_connect;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t smtp_port_t:tcp_socket name_connect;
+
+#============= spamd_update_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow spamd_update_t admin_home_t:dir write;
+
+#!!!! This avc is allowed in the current policy
+allow spamd_update_t fs_t:filesystem getattr;
+
+#!!!! This avc is allowed in the current policy
+allow spamd_update_t init_t:system status;
+
+#!!!! This avc is allowed in the current policy
+allow spamd_update_t systemd_unit_file_t:service start;

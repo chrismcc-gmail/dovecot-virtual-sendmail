@@ -1,0 +1,24 @@
+
+module centos-2 1.0;
+
+require {
+	type httpd_t;
+	type pop_port_t;
+	type smtp_port_t;
+	type dovecot_deliver_t;
+	class capability { setgid setuid };
+	class tcp_socket name_connect;
+}
+
+#============= dovecot_deliver_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow dovecot_deliver_t self:capability { setgid setuid };
+
+#============= httpd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t pop_port_t:tcp_socket name_connect;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t smtp_port_t:tcp_socket name_connect;
