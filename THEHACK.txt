@@ -17,4 +17,62 @@ $(VAR_DB)/passwd.db: /etc/dovecot/usersfile
 	@echo "done."
 
 
+### Longer version
+
+
+### Longer version
+I needed email for a new domain name for a new project.  For this project I
+also needed to run a public authoritative name server, might as well use the
+same server for email also.  The default sendmail and dovecot packages in
+CentOS mostly just work out of the box. But as a sysadmin, I wanted to make it
+better.  Reading up on dovecot, I saw that it could use virtual users rather
+than system users.  Great!  Then I realized that sendmail will not see them.
+After some web searching and pondering for an afternoon, I remembered a nsswitch
+option that most people don't use, db files for fast lookup.  By default it adds
+the contents of /etc/passwd, /etc/shadow, /etc/group, and some lesser used files
+to a key lookup (?) style database.  This allows the system to do fast uid/gid
+lookups when there are thousands of local users.  There is a Makefile in /var/db
+that generates the /var/db/passwd.db, /var/db/group.db files. I added /etc/dovecot/usersfile to the passwd line, ran make, and boom, 'getent passwd' showed the
+dovecot users also.  
+
+After some more testing, the result was a /var/db/Makefile with only one target
+/var/db/passwd.db that only used /etc/dovecot/usersfile.  And
+ "passwd:      files db  systemd" in /etc/nsswitch.conf.  Having files before db
+should allow a shell user to also have the same username in dovecot, but I 
+wouldn't recommend it.  I tested it with no problems, but there could be a
+corner case hidden somewhere.  Also the crypt passwd field from dovecot's
+virtual users is not used, nor is /var/db/shadow created, the system will never
+authenticate them.
+
+I consider it a hack that works
+
+[root@centos8 ~]# touch /etc/dovecot/usersfile 
+[root@centos8 ~]# cat /etc/dovecot/usersfile 
+# root needs to be here to get mail from the aliases in /etc/aliases
+# the Makefile skips it
+# generate passwds with doveadm, doveadm pw -p test
+# then update system with:
+# make -C /var/db
+# getent passwd to verify
+#
+root:{CRYPT}nopasswd:::::
+admin:{CRYPT}createwithdoveadm:::::
+virtualuser:{CRYPT}createwithdoveadm:::::
+othervuser:{CRYPT}createwithdoveadm:::::
+[root@centos8 ~]# make -C /var/db 
+make: Entering directory '/var/db'
+passwd... done.
+make: Leaving directory '/var/db'
+[root@centos8 ~]# getent passwd | tail 
+dovecot:x:97:97:Dovecot IMAP server:/usr/libexec/dovecot:/sbin/nologin
+dovenull:x:986:983:Dovecot's unauthorized user:/usr/libexec/dovecot:/sbin/nologin
+grmilter:x:985:982:Greylist-milter user:/var/lib/milter-greylist:/sbin/nologin
+opendkim:x:984:981:OpenDKIM Milter:/run/opendkim:/sbin/nologin
+vmail:x:983:980:dovecot virtual mailbox user:/home/vmail:/sbin/nologin
+apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+nginx:x:982:979:Nginx web server:/var/lib/nginx:/sbin/nologin
+admin:x:65534:65534:admin:/home/vmail/admin:/sbin/nologin
+virtualuser:x:65534:65534:virtualuser:/home/vmail/virtualuser:/sbin/nologin
+othervuser:x:65534:65534:othervuser:/home/vmail/othervuser:/sbin/nologin
+
 
